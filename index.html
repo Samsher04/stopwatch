@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
     <title>Mobile Stopwatch</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         * {
             margin: 0;
@@ -83,7 +84,7 @@
     <div class="stopwatch">
         <div class="time" id="display">00:00:00</div>
         <div class="buttons">
-            <button class="start" onclick="startStopwatch()">Start</button>
+            <button class="start" onclick="enableFullscreen(); startStopwatch();">Start</button>
             <button class="stop" onclick="stopStopwatch()">Stop</button>
             <button class="reset" onclick="resetStopwatch()">Reset</button>
         </div>
@@ -134,21 +135,28 @@
             updateDisplay();
         }
 
-        // Auto Rotate Code
-        async function forceLandscapeMode() {
-            if (screen.orientation) {
+        // ✅ Auto Rotate to Landscape Mode & Fullscreen
+        async function enableFullscreen() {
+            if (!document.fullscreenElement) {
                 try {
-                    await screen.orientation.lock("landscape");
+                    await document.documentElement.requestFullscreen();
                 } catch (error) {
-                    alert("Please rotate your phone to landscape mode manually.");
+                 
                 }
-            } else {
-                alert("Your device does not support auto-rotation locking.");
             }
         }
 
-        window.addEventListener("load", forceLandscapeMode);
-        window.addEventListener("orientationchange", forceLandscapeMode);
+        window.addEventListener("load", enableFullscreen);
+        window.addEventListener("orientationchange", () => {
+            if (window.innerHeight > window.innerWidth) {
+                alert("Please rotate your phone to landscape mode!");
+            }
+        });
+
+        // ✅ Register Service Worker for PWA
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js");
+        }
     </script>
 
 </body>
