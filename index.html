@@ -94,6 +94,7 @@
         let timer;
         let milliseconds = 0, seconds = 0, minutes = 0;
         let running = false;
+        let wakeLock = null;
 
         function updateDisplay() {
             let formattedTime = 
@@ -103,9 +104,30 @@
             document.getElementById("display").textContent = formattedTime;
         }
 
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log("Screen Wake Lock Enabled");
+                } catch (err) {
+                    console.error("Wake Lock Failed:", err);
+                }
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => {
+                    wakeLock = null;
+                    console.log("Screen Wake Lock Released");
+                });
+            }
+        }
+
         function startStopwatch() {
             if (!running) {
                 running = true;
+                requestWakeLock();
                 timer = setInterval(() => {
                     milliseconds++;
                     if (milliseconds === 100) {
@@ -124,6 +146,7 @@
         function stopStopwatch() {
             clearInterval(timer);
             running = false;
+            releaseWakeLock();
         }
 
         function resetStopwatch() {
@@ -132,6 +155,7 @@
             seconds = 0;
             minutes = 0;
             running = false;
+            releaseWakeLock();
             updateDisplay();
         }
 
