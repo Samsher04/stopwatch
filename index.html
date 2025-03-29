@@ -1,162 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, orientation=landscape"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
     <title>Mobile Stopwatch</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-      }
-
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background: black;
-        color: white;
-        overflow: hidden;
-      }
-
-      .stopwatch {
-        text-align: center;
-        width: 100%;
-        max-width: 600px;
-      }
-
-      .time {
-        font-size: 5rem;
-        font-weight: bold;
-        margin-bottom: 20px;
-      }
-
-      .buttons {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-      }
-
-      button {
-        padding: 15px 25px;
-        font-size: 1.5rem;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.3s;
-        width: 30%;
-      }
-
-      .start {
-        background: #00ff00;
-        color: black;
-      }
-      .stop {
-        background: #ff0000;
-        color: black;
-      }
-      .reset {
-        background: #ffffff;
-        color: black;
-      }
-
-      .start:hover {
-        background: #00cc00;
-      }
-      .stop:hover {
-        background: #cc0000;
-      }
-      .reset:hover {
-        background: #cccccc;
-      }
-
-      @media (orientation: portrait) {
-        body::before {
-          content: "Rotate your phone to landscape mode!";
-          font-size: 2rem;
-          text-align: center;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: white;
-          background: rgba(0, 0, 0, 0.8);
-          padding: 20px;
-          border-radius: 10px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black;
+            color: white;
+            overflow: hidden;
+        }
+
         .stopwatch {
-          display: none;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
         }
-      }
+
+        .time {
+            font-size: 5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 30%;
+        }
+
+        .start { background: #00ff00; color: black; }
+        .stop { background: #ff0000; color: black; }
+        .reset { background: #ffffff; color: black; }
+
+        .start:hover { background: #00cc00; }
+        .stop:hover { background: #cc0000; }
+        .reset:hover { background: #cccccc; }
+
+        @media (orientation: portrait) {
+            body::before {
+                content: "Please rotate your phone to landscape mode!";
+                font-size: 2rem;
+                text-align: center;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                background: rgba(0, 0, 0, 0.8);
+                padding: 20px;
+                border-radius: 10px;
+            }
+            .stopwatch {
+                display: none;
+            }
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+
     <div class="stopwatch">
-      <div class="time" id="display">00:00:00</div>
-      <div class="buttons">
-        <button class="start" onclick="startStopwatch()">Start</button>
-        <button class="stop" onclick="stopStopwatch()">Stop</button>
-        <button class="reset" onclick="resetStopwatch()">Reset</button>
-      </div>
+        <div class="time" id="display">00:00:00</div>
+        <div class="buttons">
+            <button class="start" onclick="startStopwatch()">Start</button>
+            <button class="stop" onclick="stopStopwatch()">Stop</button>
+            <button class="reset" onclick="resetStopwatch()">Reset</button>
+        </div>
     </div>
 
     <script>
-      let timer;
-      let milliseconds = 0,
-        seconds = 0,
-        minutes = 0;
-      let running = false;
+        let timer;
+        let milliseconds = 0, seconds = 0, minutes = 0;
+        let running = false;
 
-      function updateDisplay() {
-        let formattedTime =
-          (minutes < 10 ? "0" : "") +
-          minutes +
-          ":" +
-          (seconds < 10 ? "0" : "") +
-          seconds +
-          ":" +
-          (milliseconds < 10 ? "0" : "") +
-          milliseconds;
-        document.getElementById("display").textContent = formattedTime;
-      }
-
-      function startStopwatch() {
-        if (!running) {
-          running = true;
-          timer = setInterval(() => {
-            milliseconds++;
-            if (milliseconds === 100) {
-              milliseconds = 0;
-              seconds++;
-            }
-            if (seconds === 60) {
-              seconds = 0;
-              minutes++;
-            }
-            updateDisplay();
-          }, 10);
+        function updateDisplay() {
+            let formattedTime = 
+                (minutes < 10 ? "0" : "") + minutes + ":" +
+                (seconds < 10 ? "0" : "") + seconds + ":" +
+                (milliseconds < 10 ? "0" : "") + milliseconds;
+            document.getElementById("display").textContent = formattedTime;
         }
-      }
 
-      function stopStopwatch() {
-        clearInterval(timer);
-        running = false;
-      }
+        function startStopwatch() {
+            if (!running) {
+                running = true;
+                timer = setInterval(() => {
+                    milliseconds++;
+                    if (milliseconds === 100) {
+                        milliseconds = 0;
+                        seconds++;
+                    }
+                    if (seconds === 60) {
+                        seconds = 0;
+                        minutes++;
+                    }
+                    updateDisplay();
+                }, 10);
+            }
+        }
 
-      function resetStopwatch() {
-        clearInterval(timer);
-        milliseconds = 0;
-        seconds = 0;
-        minutes = 0;
-        running = false;
-        updateDisplay();
-      }
+        function stopStopwatch() {
+            clearInterval(timer);
+            running = false;
+        }
+
+        function resetStopwatch() {
+            clearInterval(timer);
+            milliseconds = 0;
+            seconds = 0;
+            minutes = 0;
+            running = false;
+            updateDisplay();
+        }
+
+        // Auto Rotate Code
+        async function forceLandscapeMode() {
+            if (screen.orientation) {
+                try {
+                    await screen.orientation.lock("landscape");
+                } catch (error) {
+                    alert("Please rotate your phone to landscape mode manually.");
+                }
+            } else {
+                alert("Your device does not support auto-rotation locking.");
+            }
+        }
+
+        window.addEventListener("load", forceLandscapeMode);
+        window.addEventListener("orientationchange", forceLandscapeMode);
     </script>
-  </body>
+
+</body>
 </html>
