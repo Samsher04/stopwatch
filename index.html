@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
     <title>Mobile Stopwatch</title>
-    <link rel="manifest" href="manifest.json">
     <style>
         * {
             margin: 0;
@@ -77,6 +76,15 @@
                 display: none;
             }
         }
+
+        /* Hidden Audio Trick to Prevent Screen Off */
+        #hidden-audio {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -90,11 +98,16 @@
         </div>
     </div>
 
+    <!-- Hidden Audio Trick -->
+    <audio id="hidden-audio" loop>
+        <source src="silent.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         let timer;
         let milliseconds = 0, seconds = 0, minutes = 0;
         let running = false;
-        let wakeLock = null;
+        let audio = document.getElementById("hidden-audio");
 
         function updateDisplay() {
             let formattedTime = 
@@ -104,30 +117,10 @@
             document.getElementById("display").textContent = formattedTime;
         }
 
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log("Screen Wake Lock Enabled");
-                } catch (err) {
-                    console.error("Wake Lock Failed:", err);
-                }
-            }
-        }
-
-        function releaseWakeLock() {
-            if (wakeLock !== null) {
-                wakeLock.release().then(() => {
-                    wakeLock = null;
-                    console.log("Screen Wake Lock Released");
-                });
-            }
-        }
-
         function startStopwatch() {
             if (!running) {
                 running = true;
-                requestWakeLock();
+                playAudio(); // Start audio to prevent screen off
                 timer = setInterval(() => {
                     milliseconds++;
                     if (milliseconds === 100) {
@@ -146,7 +139,7 @@
         function stopStopwatch() {
             clearInterval(timer);
             running = false;
-            releaseWakeLock();
+            stopAudio();
         }
 
         function resetStopwatch() {
@@ -155,31 +148,28 @@
             seconds = 0;
             minutes = 0;
             running = false;
-            releaseWakeLock();
+            stopAudio();
             updateDisplay();
         }
 
-        // ✅ Auto Rotate to Landscape Mode & Fullscreen
-        async function enableFullscreen() {
+        function enableFullscreen() {
             if (!document.fullscreenElement) {
                 try {
-                    await document.documentElement.requestFullscreen();
-                } catch (error) {
-                 
-                }
+                    document.documentElement.requestFullscreen();
+                } catch (error) {}
             }
         }
 
-        window.addEventListener("load", enableFullscreen);
-        window.addEventListener("orientationchange", () => {
-            if (window.innerHeight > window.innerWidth) {
-                alert("Please rotate your phone to landscape mode!");
+        // ✅ Hidden Audio Trick to Prevent Screen Off
+        function playAudio() {
+            if (audio.paused) {
+                audio.play().catch(err => console.log("Audio play failed:", err));
             }
-        });
+        }
 
-        // ✅ Register Service Worker for PWA
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("service-worker.js");
+        function stopAudio() {
+            audio.pause();
+            audio.currentTime = 0;
         }
     </script>
 
